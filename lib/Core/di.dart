@@ -14,6 +14,12 @@ import 'package:glitchx_admin/features/Category_Page/Domain/UseCase/get_category
 import 'package:glitchx_admin/features/Category_Page/Domain/category_repository/category_repository.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_bloc.dart';
 import 'package:glitchx_admin/features/HomePage/Presentation/Bloc/home_bloc.dart';
+import 'package:glitchx_admin/features/ProductPage/Data/ProductRepositoryImpl/product_repositoryimpl.dart';
+import 'package:glitchx_admin/features/ProductPage/Data/Product_RemoteDatasource/product_data_remotesource.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/Product_repository/product_repository.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/get_product_usecase.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/uploadproduct_usecase.dart';
+import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -33,6 +39,10 @@ Future<void> init() async {
     () => CategoryRemotedatasource(firestore: sl()),
   );
 
+  sl.registerLazySingleton<ProductDataRemotesource>(
+    () => ProductDataRemotesource(firestore: sl()),
+  );
+
   //repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(sl(), sl()),
@@ -41,11 +51,17 @@ Future<void> init() async {
     () => CategoryRepositoryimpl(sl()),
   );
 
+  sl.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryimpl(productDataRemotesource: sl()),
+  );
+
   //UseCase
   sl.registerLazySingleton(() => AdminLoginUsecase(sl()));
   sl.registerLazySingleton(() => CheckAuthStatusUseCase(sl()));
   sl.registerLazySingleton(() => AddcategoryUsecase(sl()));
   sl.registerLazySingleton(() => GetCategoryUsecase(sl()));
+  sl.registerLazySingleton(() => UploadproductUsecase(repository: sl()));
+  sl.registerLazySingleton(() => GetProductUsecase(productRepository: sl()));
 
   //Bloc
   sl.registerFactory<AuthBloc>(
@@ -54,4 +70,8 @@ Future<void> init() async {
   sl.registerFactory(() => HomeBloc());
 
   sl.registerFactory(() => CategoryBloc(addCategory: sl(), getCategory: sl()));
+
+  sl.registerFactory(
+    () => ProductBloc(getProductUsecase: sl(), productUsecase: sl()),
+  );
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,27 +11,57 @@ class ProductDataRemotesource {
 
   ProductDataRemotesource({required this.firestore});
 
-  Future<void> uploadProduct(ProductModel product) async {
-    await firestore.collection('products').add(product.toMap());
+  /// Adds a product to Firestore
+  Future<void> addProduct(ProductModel product) async {
+    try {
+      // Adding the product data to Firestore
+      await firestore.collection('products').add(product.toMap());
+    } catch (e) {
+      // Catching any errors that occur during product addition
+      throw Exception('Error adding product: $e');
+    }
   }
 
-  Future<String> uploadImageTOCloudinary(File imageFile) async {
-    final url = Uri.parse(cloudinarylink);
-    final request =
-        http.MultipartRequest('POST', url)
-          ..fields['upload_preset'] = 'products'
-          ..files.add(
-            await http.MultipartFile.fromPath('file', imageFile.path),
-          );
+  /// Uploads the image to Cloudinary and returns the secure URL
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      final url = Uri.parse(
+        "https://api.cloudinary.com/v1_1/ditsarti8/image/upload",
+      );
 
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
-    final data = json.decode(responseBody);
+      final request =
+          http.MultipartRequest("POST", url)
+            ..fields['upload_preset'] = 'glitchx_upload'
+            ..fields['folder'] = ':products'
+            ..files.add(
+              await http.MultipartFile.fromPath('file', imageFile.path),
+            );
 
-    if (response.statusCode == 200) {
-      return data['secure_url'];
-    } else {
-      throw Exception('Image upload failed: ${data['error']['message']}');
+      final response = await request.send();
+      log('${response.statusCode}');
+      if (response.statusCode == 200) {
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseBody);
+        return jsonResponse['secure_url'] as String?;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log("Response $e");
+      return null;
+    }
+  }
+
+  Future<List<ProductModel>> getProducts() async {
+    try {
+      final querySnapshot = await firestore.collection('products').get();
+      log('$querySnapshot');
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return ProductModel.fromMap(data);
+      }).toList();
+    } catch (e) {
+      throw Exception('Error fetching products: $e');
     }
   }
 }

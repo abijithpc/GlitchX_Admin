@@ -5,4 +5,5 @@ import 'package:glitchx_admin/features/ProductPage/Domain/models/product_model.d
 abstract class ProductRepository {
   Future<void> uploadProduct(ProductModel product, File image);
 
+  Future<List<ProductModel>> fetchProducts();
 }

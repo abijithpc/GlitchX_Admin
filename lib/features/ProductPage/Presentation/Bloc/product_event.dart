@@ -10,3 +10,5 @@ class UploadProductEvent extends ProductEvent {
 
   UploadProductEvent({required this.product, required this.image});
 }
+
+class FetchProductEvent extends ProductEvent {}
