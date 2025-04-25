@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "290026814616",
+    "project_id": "glitchxapp00711",
+    "storage_bucket": "glitchxapp00711.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290026814616:android:1f6903683346a26f1024ed",
+        "android_client_info": {
+          "package_name": "com.example.glitchx_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "290026814616-i28u575g44rb66dq55or3dengik57j6u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfuGnOYOC-rHK2xxwPiWWEcMhKyiMPQPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290026814616-hevu3bc5usln97ttar8hobh5jheon0ah.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "290026814616-q574hj5p2argbbaq8atvt0gbugq415ei.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.glitchxAdmin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290026814616:android:35b453616056d9a81024ed",
+        "android_client_info": {
+          "package_name": "com.example.glitchxscndprjt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "290026814616-3av9mjesj3qopfod3lq9pl75ntp01mm7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.glitchxscndprjt",
+            "certificate_hash": "2e56935e4978e2b5ffb81dc3327f8b913c19ddaa"
+          }
+        },
+        {
+          "client_id": "290026814616-i28u575g44rb66dq55or3dengik57j6u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfuGnOYOC-rHK2xxwPiWWEcMhKyiMPQPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290026814616-hevu3bc5usln97ttar8hobh5jheon0ah.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "290026814616-q574hj5p2argbbaq8atvt0gbugq415ei.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.glitchxAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
