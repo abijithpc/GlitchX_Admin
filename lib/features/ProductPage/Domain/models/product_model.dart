@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductModel {
+  final String? id;
   final String name;
   final String description;
   final String category;
@@ -13,6 +14,7 @@ class ProductModel {
   final String imageUrl;
 
   ProductModel({
+    this.id,
     required this.name,
     required this.description,
     required this.category,
@@ -27,6 +29,7 @@ class ProductModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'description': description,
       'category': category,
@@ -42,6 +45,7 @@ class ProductModel {
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
+      id: map['id'],
       name: map['name'],
       description: map['description'],
       category: map['category'],
@@ -61,4 +65,19 @@ class ProductModel {
     }
     return DateTime.now();
   }
+
+  // ProductModel copyWith({
+  //   String? id,
+  //   String? name,
+  //   int? price,
+  //   String? description,
+  //   DateTime? createdAt,
+  // }) => ProductModel(
+  //   id: id ?? this.id,
+  //   name: name ?? this.name,
+  //   price: price ?? this.price,
+  //   description: description ?? this.description,
+  //   releaseDate: createdAt ?? this.releaseDate,
+  //   category: ,
+  // );
 }

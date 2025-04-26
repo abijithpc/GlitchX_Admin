@@ -12,3 +12,15 @@ class UploadProductEvent extends ProductEvent {
 }
 
 class FetchProductEvent extends ProductEvent {}
+
+class DeleteProductEvent extends ProductEvent {
+  final String productId;
+
+  DeleteProductEvent(this.productId);
+}
+
+class EditProductEvent extends ProductEvent {
+  final ProductModel updatedProduct;
+
+  EditProductEvent(this.updatedProduct);
+}

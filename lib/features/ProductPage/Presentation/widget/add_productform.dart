@@ -9,6 +9,7 @@ import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_blo
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_event.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AddProductForm extends StatefulWidget {
   final List<String> categories;
@@ -28,12 +29,17 @@ class _AddProductFormState extends State<AddProductForm> {
   final TextEditingController _minSpecsController = TextEditingController();
   final TextEditingController _recSpecsController = TextEditingController();
 
+  final Uuid _uuid = Uuid();
+
   File? _imageFile;
   String? _selectedCategory;
   DateTime? _releaseDate;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
     if (pickedFile != null) setState(() => _imageFile = File(pickedFile.path));
   }
 
@@ -55,29 +61,77 @@ class _AddProductFormState extends State<AddProductForm> {
         children: [
           _buildImagePicker(),
           _spacer(),
-          _buildField("Game Name", CupertinoIcons.game_controller, _nameController),
+          _buildField(
+            "Game Name",
+            CupertinoIcons.game_controller,
+            _nameController,
+          ),
           _spacer(),
-          _buildField("Description", CupertinoIcons.doc_text_fill, _descController, maxLines: 3),
+          _buildField(
+            "Description",
+            CupertinoIcons.doc_text_fill,
+            _descController,
+            maxLines: 3,
+          ),
           _spacer(),
-          _buildDropdown("Category", CupertinoIcons.cube_box_fill, widget.categories),
+          _buildDropdown(
+            "Category",
+            CupertinoIcons.cube_box_fill,
+            widget.categories,
+          ),
           _spacer(),
-          _buildField("Disk Count", CupertinoIcons.number, _diskCountController, keyboardType: TextInputType.number),
+          _buildField(
+            "Disk Count",
+            CupertinoIcons.number,
+            _diskCountController,
+            keyboardType: TextInputType.number,
+          ),
           _spacer(),
-          _buildField("Price (₹)", CupertinoIcons.money_dollar, _priceController, keyboardType: TextInputType.number),
+          _buildField(
+            "Price (₹)",
+            CupertinoIcons.money_dollar,
+            _priceController,
+            keyboardType: TextInputType.number,
+          ),
           _spacer(),
-          _buildField("Stock", CupertinoIcons.archivebox_fill, _stockController, keyboardType: TextInputType.number),
+          _buildField(
+            "Stock",
+            CupertinoIcons.archivebox_fill,
+            _stockController,
+            keyboardType: TextInputType.number,
+          ),
           _spacer(),
-          _buildField("Minimum Specs", CupertinoIcons.memories, _minSpecsController, maxLines: 2),
+          _buildField(
+            "Minimum Specs",
+            CupertinoIcons.memories,
+            _minSpecsController,
+            maxLines: 2,
+          ),
           _spacer(),
-          _buildField("Recommended Specs", CupertinoIcons.star_fill, _recSpecsController, maxLines: 2),
+          _buildField(
+            "Recommended Specs",
+            CupertinoIcons.star_fill,
+            _recSpecsController,
+            maxLines: 2,
+          ),
           _spacer(),
           InkWell(
             onTap: _pickReleaseDate,
             child: InputDecorator(
-              decoration: _inputDecoration("Release Date", CupertinoIcons.calendar),
+              decoration: _inputDecoration(
+                "Release Date",
+                CupertinoIcons.calendar,
+              ),
               child: Text(
-                _releaseDate != null ? DateFormat.yMMMd().format(_releaseDate!) : "Tap to pick a date",
-                style: TextStyle(color: _releaseDate != null ? CupertinoColors.black : CupertinoColors.systemGrey),
+                _releaseDate != null
+                    ? DateFormat.yMMMd().format(_releaseDate!)
+                    : "Tap to pick a date",
+                style: TextStyle(
+                  color:
+                      _releaseDate != null
+                          ? CupertinoColors.black
+                          : CupertinoColors.systemGrey,
+                ),
               ),
             ),
           ),
@@ -85,7 +139,7 @@ class _AddProductFormState extends State<AddProductForm> {
           CupertinoButton.filled(
             onPressed: _onSubmit,
             child: const Text("Add Product", style: TextStyle(fontSize: 18)),
-          )
+          ),
         ],
       ),
     );
@@ -93,8 +147,12 @@ class _AddProductFormState extends State<AddProductForm> {
 
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) return;
-    if (_imageFile == null || _releaseDate == null || _selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please complete all fields")));
+    if (_imageFile == null ||
+        _releaseDate == null ||
+        _selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please complete all fields")),
+      );
       return;
     }
 
@@ -111,7 +169,9 @@ class _AddProductFormState extends State<AddProductForm> {
       imageUrl: "",
     );
 
-    context.read<ProductBloc>().add(UploadProductEvent(product: product, image: _imageFile!));
+    context.read<ProductBloc>().add(
+      UploadProductEvent(product: product, image: _imageFile!),
+    );
     Navigator.pop(context);
   }
 
@@ -126,22 +186,33 @@ class _AddProductFormState extends State<AddProductForm> {
         child: Container(
           height: 180,
           width: double.infinity,
-          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-          child: _imageFile != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(_imageFile!, fit: BoxFit.contain),
-                )
-              : const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(CupertinoIcons.photo_on_rectangle, size: 40, color: CupertinoColors.activeBlue),
-                      SizedBox(height: 10),
-                      Text("Tap to upload image", style: TextStyle(color: CupertinoColors.activeBlue)),
-                    ],
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child:
+              _imageFile != null
+                  ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(_imageFile!, fit: BoxFit.contain),
+                  )
+                  : const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CupertinoIcons.photo_on_rectangle,
+                          size: 40,
+                          color: CupertinoColors.activeBlue,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          "Tap to upload image",
+                          style: TextStyle(color: CupertinoColors.activeBlue),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
         ),
       ),
     );
@@ -158,7 +229,8 @@ class _AddProductFormState extends State<AddProductForm> {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      validator: (value) => value == null || value.isEmpty ? "Enter $label" : null,
+      validator:
+          (value) => value == null || value.isEmpty ? "Enter $label" : null,
       decoration: _inputDecoration(label, icon),
     );
   }
@@ -169,7 +241,8 @@ class _AddProductFormState extends State<AddProductForm> {
       onChanged: (val) => setState(() => _selectedCategory = val),
       validator: (val) => val == null ? "Select $label" : null,
       decoration: _inputDecoration(label, icon),
-      items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+      items:
+          items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
     );
   }
 

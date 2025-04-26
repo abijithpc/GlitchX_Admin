@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:glitchx_admin/Core/constant.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/models/product_model.dart';
 
 class ProductDataRemotesource {
@@ -58,10 +57,41 @@ class ProductDataRemotesource {
       log('$querySnapshot');
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
+        data['id'] = doc.id;
         return ProductModel.fromMap(data);
       }).toList();
     } catch (e) {
       throw Exception('Error fetching products: $e');
+    }
+  }
+
+  Future<void> updatedProduct(ProductModel product) async {
+    try {
+      await firestore
+          .collection('products')
+          .doc(product.id)
+          .update(product.toMap());
+    } catch (e) {
+      throw Exception('Error Updating product : $e');
+    }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    try {
+      await firestore.collection('products').doc(productId).delete();
+    } catch (e) {
+      throw Exception('Failed to Delete the Product : $e');
+    }
+  }
+
+  Future<void> updateProduct(ProductModel product) async {
+    try {
+      await firestore
+          .collection('products')
+          .doc(product.id)
+          .update(product.toMap());
+    } catch (e) {
+      throw Exception('Error updating product in FireStore : $e');
     }
   }
 }

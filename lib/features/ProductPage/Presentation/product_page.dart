@@ -6,6 +6,7 @@ import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_blo
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_event.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_state.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/add_productpage.dart';
+import 'package:glitchx_admin/features/ProductPage/Presentation/edit_productpage.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -54,8 +55,15 @@ class _ProductPageState extends State<ProductPage> {
               Expanded(
                 child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
+                    if (state is ProductDeleted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Product Deleted Successfully')),
+                      );
+                    }
                     if (state is Productloading) {
-                      return Center(child: CupertinoActivityIndicator());
+                      return Center(
+                        child: CupertinoActivityIndicator(color: Colors.white),
+                      );
                     } else if (state is ProductLoaded) {
                       final productList = state.products;
 
@@ -111,34 +119,47 @@ class _ProductPageState extends State<ProductPage> {
                                 ),
                               ),
                               // Add Edit and Remove Buttons
-                              onTap: () {},
-                              onLongPress: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return CupertinoAlertDialog(
-                                      title: const Text('Remove Product'),
-                                      content: const Text(
-                                        'Are you sure you want to remove this product?',
-                                      ),
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          onPressed: () {
-                                            // Perform delete operation (you can implement actual deletion logic)
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Delete'),
-                                        ),
-                                        CupertinoDialogAction(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            EditProductPage(product: product),
+                                  ),
                                 );
+                              },
+                              onLongPress: () {
+                                if (product != null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return CupertinoAlertDialog(
+                                        title: const Text('Remove Product'),
+                                        content: const Text(
+                                          'Are you sure you want to remove this product?',
+                                        ),
+                                        actions: [
+                                          CupertinoDialogAction(
+                                            onPressed: () {
+                                              context.read<ProductBloc>().add(
+                                                DeleteProductEvent(product.id!),
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Delete'),
+                                          ),
+                                          CupertinoDialogAction(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
                               },
                             ),
                           );

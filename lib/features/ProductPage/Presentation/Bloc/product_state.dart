@@ -20,8 +20,13 @@ class ProductFailure extends ProductState {
 class ProductLoaded extends ProductState {
   final List<ProductModel> products;
 
-  ProductLoaded(this.products);
-
+  @override
+  ProductLoaded({required this.products});
   @override
   List<Object> get props => [products];
 }
+
+class ProductUpdated extends ProductState {}
+
+class ProductDeleted extends ProductState {}
+

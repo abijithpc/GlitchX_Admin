@@ -17,6 +17,8 @@ import 'package:glitchx_admin/features/HomePage/Presentation/Bloc/home_bloc.dart
 import 'package:glitchx_admin/features/ProductPage/Data/ProductRepositoryImpl/product_repositoryimpl.dart';
 import 'package:glitchx_admin/features/ProductPage/Data/Product_RemoteDatasource/product_data_remotesource.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/Product_repository/product_repository.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/delete_usecase.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/edit_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/get_product_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/uploadproduct_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
@@ -62,6 +64,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetCategoryUsecase(sl()));
   sl.registerLazySingleton(() => UploadproductUsecase(repository: sl()));
   sl.registerLazySingleton(() => GetProductUsecase(productRepository: sl()));
+  sl.registerLazySingleton(() => DeleteProductUsecase(sl()));
+  sl.registerLazySingleton(() => EditProductUsecase(sl()));
 
   //Bloc
   sl.registerFactory<AuthBloc>(
@@ -72,6 +76,11 @@ Future<void> init() async {
   sl.registerFactory(() => CategoryBloc(addCategory: sl(), getCategory: sl()));
 
   sl.registerFactory(
-    () => ProductBloc(getProductUsecase: sl(), productUsecase: sl()),
+    () => ProductBloc(
+      getProductUsecase: sl(),
+      productUsecase: sl(),
+      deleteProductUsecase: sl(),
+      editProductUsecase: sl(),
+    ),
   );
 }
