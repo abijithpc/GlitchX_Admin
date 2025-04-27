@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/models/product_model.dart';
 
 class ProductDataRemotesource {
   final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
 
-  ProductDataRemotesource({required this.firestore});
+  ProductDataRemotesource({required this.firestore, required this.storage});
 
   /// Adds a product to Firestore
   Future<void> addProduct(ProductModel product) async {
@@ -65,14 +67,21 @@ class ProductDataRemotesource {
     }
   }
 
-  Future<void> updatedProduct(ProductModel product) async {
+  Future<void> updateProduct(ProductModel product) async {
     try {
-      await firestore
-          .collection('products')
-          .doc(product.id)
-          .update(product.toMap());
+      await firestore.collection('products').doc(product.id).update({
+        'name': product.name,
+        'description': product.description,
+        'category': product.category,
+        'price': product.price,
+        'stock': product.stock,
+        'minSpecs': product.minSpecs,
+        'recSpecs': product.recSpecs,
+        'releaseDate': product.releaseDate,
+        'imageUrl': product.imageUrl, // Include imageUrl if updated
+      });
     } catch (e) {
-      throw Exception('Error Updating product : $e');
+      throw Exception('Error updating product in Firestore: $e');
     }
   }
 
@@ -84,14 +93,38 @@ class ProductDataRemotesource {
     }
   }
 
-  Future<void> updateProduct(ProductModel product) async {
+  // Future<void> updateProduct(ProductModel product) async {
+  //   try {
+  //     await firestore
+  //         .collection('products')
+  //         .doc(product.id)
+  //         .update(product.toMap());
+  //   } catch (e) {
+  //     throw Exception('Error updating product in FireStore : $e');
+  //   }
+  // }
+
+  Future<void> updateProductImageInFirestore(
+    String productId,
+    String imageUrl,
+  ) async {
     try {
       await firestore
           .collection('products')
-          .doc(product.id)
-          .update(product.toMap());
+          .doc(productId)
+          .update({'imageUrl': imageUrl})
+          .then((_) async {
+            log("Product image updated to: $imageUrl");
+
+            // Fetch the document again to check if the update was successful
+            var docSnapshot =
+                await firestore.collection('products').doc(productId).get();
+            log("Updated product data: ${docSnapshot.data()}");
+            
+          });
     } catch (e) {
-      throw Exception('Error updating product in FireStore : $e');
+      log('Error updating product image in Firestore: $e');
+      throw Exception('Error updating product image in Firestore: $e');
     }
   }
 }

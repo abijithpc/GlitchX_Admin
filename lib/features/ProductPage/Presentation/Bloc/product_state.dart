@@ -30,3 +30,24 @@ class ProductUpdated extends ProductState {}
 
 class ProductDeleted extends ProductState {}
 
+class ProductImageUpdated extends ProductState {
+  final String imageUrl;
+
+  ProductImageUpdated({required this.imageUrl});
+}
+
+class EditProductImageInitial extends ProductState {}
+
+class EditProductImageLoading extends ProductState {}
+
+class EditProductImageSuccess extends ProductState {
+  final String imageUrl;
+
+  EditProductImageSuccess(this.imageUrl);
+}
+
+class EditProductImageError extends ProductState {
+  final String message;
+
+  EditProductImageError(this.message);
+}

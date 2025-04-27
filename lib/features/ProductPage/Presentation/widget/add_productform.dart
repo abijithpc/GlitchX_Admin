@@ -29,7 +29,7 @@ class _AddProductFormState extends State<AddProductForm> {
   final TextEditingController _minSpecsController = TextEditingController();
   final TextEditingController _recSpecsController = TextEditingController();
 
-  final Uuid _uuid = Uuid();
+  // final Uuid _uuid = Uuid();
 
   File? _imageFile;
   String? _selectedCategory;

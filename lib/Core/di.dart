@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:glitchx_admin/features/Auth/LoginPage/Data/AuthRepositoryImpl/auth_repository_impl.dart';
 import 'package:glitchx_admin/features/Auth/LoginPage/Data/Auth_RemoteDatasource/auth_remote_datasource.dart';
@@ -20,12 +21,16 @@ import 'package:glitchx_admin/features/ProductPage/Domain/Product_repository/pro
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/delete_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/edit_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/get_product_usecase.dart';
+import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/update_profile_image_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/uploadproduct_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  //FireStorage
+  sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
+
   //Firebase
   sl.registerLazySingleton(() => FirebaseAuth.instance);
 
@@ -42,7 +47,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<ProductDataRemotesource>(
-    () => ProductDataRemotesource(firestore: sl()),
+    () => ProductDataRemotesource(firestore: sl(), storage: sl()),
   );
 
   //repository
@@ -66,6 +71,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetProductUsecase(productRepository: sl()));
   sl.registerLazySingleton(() => DeleteProductUsecase(sl()));
   sl.registerLazySingleton(() => EditProductUsecase(sl()));
+  sl.registerLazySingleton(() => EditProductImageUseCase(sl()));
 
   //Bloc
   sl.registerFactory<AuthBloc>(
@@ -81,6 +87,7 @@ Future<void> init() async {
       productUsecase: sl(),
       deleteProductUsecase: sl(),
       editProductUsecase: sl(),
+      updateProductImageUsecase: sl(),
     ),
   );
 }

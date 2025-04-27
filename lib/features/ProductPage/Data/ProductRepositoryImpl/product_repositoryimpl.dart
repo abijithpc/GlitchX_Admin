@@ -38,29 +38,29 @@ class ProductRepositoryimpl implements ProductRepository {
     return await productDataRemotesource.getProducts();
   }
 
-  @override
-  Future<void> editProduct(ProductModel product) async {
-    try {
-      String imageUrl = product.imageUrl;
+  // @override
+  // Future<void> editProduct(ProductModel product) async {
+  //   try {
+  //     String imageUrl = product.imageUrl;
 
-      final updatedProduct = ProductModel(
-        name: product.name,
-        description: product.description,
-        category: product.category,
-        diskCount: product.diskCount,
-        price: product.price,
-        stock: product.stock,
-        minSpecs: product.minSpecs,
-        recSpecs: product.recSpecs,
-        releaseDate: product.releaseDate,
-        imageUrl: imageUrl,
-      );
+  //     final updatedProduct = ProductModel(
+  //       name: product.name,
+  //       description: product.description,
+  //       category: product.category,
+  //       diskCount: product.diskCount,
+  //       price: product.price,
+  //       stock: product.stock,
+  //       minSpecs: product.minSpecs,
+  //       recSpecs: product.recSpecs,
+  //       releaseDate: product.releaseDate,
+  //       imageUrl: imageUrl,
+  //     );
 
-      await productDataRemotesource.updatedProduct(updatedProduct);
-    } catch (e) {
-      throw Exception('Error updating Product : $e');
-    }
-  }
+  //     await productDataRemotesource.updatedProduct(updatedProduct);
+  //   } catch (e) {
+  //     throw Exception('Error updating Product : $e');
+  //   }
+  // }
 
   @override
   Future<void> deleteProduct(String productId) async {
@@ -78,6 +78,37 @@ class ProductRepositoryimpl implements ProductRepository {
       return true;
     } catch (e) {
       throw Exception('Error updating Product: $e');
+    }
+  }
+
+  @override
+  Future<String?> editProductImage(File imageFile, String productId) async {
+    try {
+      // Upload image to Cloudinary
+      final imageUrl = await productDataRemotesource.uploadImage(imageFile);
+      if (imageUrl != null) {
+        // Log the image URL to verify it's valid
+        print("Image URL from Cloudinary: $imageUrl");
+
+        // Update Firestore with the new image URL
+        try {
+          await productDataRemotesource.updateProductImageInFirestore(
+            productId,
+            imageUrl,
+          );
+        } catch (e) {
+          print("Error updating product image in Firestore: $e");
+          throw Exception('Error updating product image in Firestore: $e');
+        }
+      } else {
+        print("Failed to upload image to Cloudinary");
+        throw Exception("Image URL is null, upload failed.");
+      }
+
+      return imageUrl;
+    } catch (e) {
+      print("Error in editProductImage: $e");
+      throw Exception('Error editing product image: $e');
     }
   }
 }

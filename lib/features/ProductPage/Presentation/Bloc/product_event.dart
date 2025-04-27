@@ -24,3 +24,16 @@ class EditProductEvent extends ProductEvent {
 
   EditProductEvent(this.updatedProduct);
 }
+
+class EditProductImageSubmitted extends ProductEvent {
+  final File imageFile;
+  final String productId;
+
+  EditProductImageSubmitted({required this.imageFile, required this.productId});
+}
+
+class ProductImageUpdatedEvent extends ProductEvent {
+  final ProductModel updatedProduct;
+
+  ProductImageUpdatedEvent(this.updatedProduct);
+}

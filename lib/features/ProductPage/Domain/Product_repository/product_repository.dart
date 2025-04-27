@@ -7,9 +7,11 @@ abstract class ProductRepository {
 
   Future<List<ProductModel>> fetchProducts();
 
-  Future<void> editProduct(ProductModel product);
+  // Future<void> editProduct(ProductModel product);
 
   Future<void> deleteProduct(String productId);
 
   Future<bool> updateProduct(ProductModel product);
+
+  Future<String?> editProductImage(File imageFile, String productId);
 }

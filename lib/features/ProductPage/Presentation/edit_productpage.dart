@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:glitchx_admin/features/ProductPage/Domain/models/product_model.d
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_event.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_state.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditProductPage extends StatefulWidget {
@@ -21,6 +24,7 @@ class _EditProductPageState extends State<EditProductPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  final ImagePicker _imagePicker = ImagePicker();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
@@ -33,6 +37,8 @@ class _EditProductPageState extends State<EditProductPage>
 
   DateTime? _releaseDate;
   String? _imageUrl;
+  File? _imageFile;
+  String? _newImageUrl; // To store new image URL
 
   @override
   void initState() {
@@ -73,8 +79,17 @@ class _EditProductPageState extends State<EditProductPage>
     super.dispose();
   }
 
-  void _saveChanges() {
-    final updateProduct = ProductModel(
+  void _saveChanges() async {
+    String updatedImageUrl = widget.product.imageUrl;
+
+    // If the user has selected a new image, upload it to Firebase and get the URL
+    if (_imageFile != null) {
+      updatedImageUrl = await _uploadImageToFirebase(
+        _imageFile!,
+      ); // Upload image to Firebase and get the URL
+    }
+
+    final updatedProduct = ProductModel(
       id: widget.product.id,
       name: _nameController.text,
       description: _descriptionController.text,
@@ -85,9 +100,20 @@ class _EditProductPageState extends State<EditProductPage>
       minSpecs: _minSpecsController.text,
       recSpecs: _recSpecsController.text,
       releaseDate: _releaseDate ?? DateTime.now(),
-      imageUrl: _imageUrl!,
+      imageUrl: updatedImageUrl, // Use the updated image URL here
     );
-    context.read<ProductBloc>().add(EditProductEvent(updateProduct));
+
+    context.read<ProductBloc>().add(EditProductEvent(updatedProduct));
+  }
+
+  Future<String> _uploadImageToFirebase(File imageFile) async {
+    // Example: Upload to Firebase Storage
+    final storageRef = FirebaseStorage.instance.ref().child(
+      'products/${widget.product.id}/${DateTime.now().toString()}.jpg',
+    );
+    await storageRef.putFile(imageFile);
+    final downloadUrl = await storageRef.getDownloadURL();
+    return downloadUrl; // Return the Firebase URL of the uploaded image
   }
 
   Widget _buildTextField({
@@ -137,7 +163,21 @@ class _EditProductPageState extends State<EditProductPage>
 
   Widget _buildImagePicker() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        final image = await _imagePicker.pickImage(source: ImageSource.gallery);
+        if (image != null) {
+          setState(() {
+            _imageFile = File(image.path);
+            _imageUrl = null; // Set _imageUrl to null to indicate a new image
+          });
+          context.read<ProductBloc>().add(
+            EditProductImageSubmitted(
+              imageFile: _imageFile!,
+              productId: widget.product.id!,
+            ),
+          );
+        }
+      },
       child: Stack(
         children: [
           Container(
@@ -146,15 +186,20 @@ class _EditProductPageState extends State<EditProductPage>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               image:
-                  _imageUrl != null
+                  _imageFile != null
                       ? DecorationImage(
-                        image: NetworkImage(_imageUrl!),
+                        image: FileImage(_imageFile!),
                         fit: BoxFit.cover,
                       )
-                      : const DecorationImage(
-                        image: AssetImage('assets/images/placeholder.png'),
-                        fit: BoxFit.cover,
-                      ),
+                      : (_imageUrl != null
+                          ? DecorationImage(
+                            image: NetworkImage(_imageUrl!),
+                            fit: BoxFit.cover,
+                          )
+                          : const DecorationImage(
+                            image: AssetImage('assets/images/placeholder.png'),
+                            fit: BoxFit.cover,
+                          )),
               color: Colors.grey.withAlpha(77),
             ),
           ),
@@ -227,7 +272,6 @@ class _EditProductPageState extends State<EditProductPage>
                   child: CupertinoActivityIndicator(color: Colors.white),
                 );
               } else if (state is ProductLoaded) {
-                final productList = state.products;
                 return SafeArea(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
