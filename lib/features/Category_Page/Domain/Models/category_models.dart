@@ -8,5 +8,5 @@ class CategoryModels {
     return CategoryModels(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
-  Map<String, dynamic> toJson() => {'name': name};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 }

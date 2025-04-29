@@ -14,4 +14,14 @@ class CategoryRepositoryimpl implements CategoryRepository {
   @override
   Future<List<CategoryModels>> getCategories() =>
       remotedatasource.fetchCategories();
+
+  @override
+  Future<void> deleteCategory(String categoryId) async {
+    await remotedatasource.deleteCategory(categoryId);
+  }
+
+  @override
+  Future<void> updateCategory(CategoryModels category) {
+    return remotedatasource.updateCategory(category);
+  }
 }

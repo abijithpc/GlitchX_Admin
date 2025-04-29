@@ -15,3 +15,7 @@ class CategoryError extends CategoryState {
   final String message;
   CategoryError(this.message);
 }
+
+class CategoryDeleted extends CategoryState {}
+
+class CategoryUpdated extends CategoryState {}

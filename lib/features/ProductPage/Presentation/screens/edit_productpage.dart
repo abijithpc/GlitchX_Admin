@@ -144,7 +144,7 @@ class _EditProductPageState extends State<EditProductPage>
             Icon(icon, color: Colors.deepPurple, size: 24),
             const SizedBox(width: 12),
             Expanded(
-              child: TextField(
+              child: TextFormField(
                 controller: controller,
                 keyboardType: type,
                 style: const TextStyle(color: Colors.black87, fontSize: 16),

@@ -15,8 +15,13 @@ class ProductDataRemotesource {
   /// Adds a product to Firestore
   Future<void> addProduct(ProductModel product) async {
     try {
-      // Adding the product data to Firestore
-      await firestore.collection('products').add(product.toMap());
+      var productRef = await firestore
+          .collection('products')
+          .add(product.toMap());
+
+      product.id = productRef.id;
+
+      await productRef.update({'id': product.id});
     } catch (e) {
       // Catching any errors that occur during product addition
       throw Exception('Error adding product: $e');
@@ -24,19 +29,19 @@ class ProductDataRemotesource {
   }
 
   /// Uploads the image to Cloudinary and returns the secure URL
-  Future<String?> uploadImage(File imageFile) async {
+  Future<String?> uploadImage(List<File> imageFile) async {
     try {
       final url = Uri.parse(
         "https://api.cloudinary.com/v1_1/ditsarti8/image/upload",
       );
 
+      final file = imageFile[0];
+
       final request =
           http.MultipartRequest("POST", url)
             ..fields['upload_preset'] = 'glitchx_upload'
             ..fields['folder'] = ':products'
-            ..files.add(
-              await http.MultipartFile.fromPath('file', imageFile.path),
-            );
+            ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
       final response = await request.send();
       log('${response.statusCode}');
@@ -120,7 +125,6 @@ class ProductDataRemotesource {
             var docSnapshot =
                 await firestore.collection('products').doc(productId).get();
             log("Updated product data: ${docSnapshot.data()}");
-            
           });
     } catch (e) {
       log('Error updating product image in Firestore: $e');

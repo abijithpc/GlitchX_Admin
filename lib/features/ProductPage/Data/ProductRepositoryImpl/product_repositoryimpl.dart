@@ -10,7 +10,7 @@ class ProductRepositoryimpl implements ProductRepository {
   ProductRepositoryimpl({required this.productDataRemotesource});
 
   @override
-  Future<void> uploadProduct(ProductModel product, File image) async {
+  Future<void> uploadProduct(ProductModel product, List<File> image) async {
     try {
       final imageUrl = await productDataRemotesource.uploadImage(image);
 
@@ -85,7 +85,7 @@ class ProductRepositoryimpl implements ProductRepository {
   Future<String?> editProductImage(File imageFile, String productId) async {
     try {
       // Upload image to Cloudinary
-      final imageUrl = await productDataRemotesource.uploadImage(imageFile);
+      final imageUrl = await productDataRemotesource.uploadImage([imageFile]);
       if (imageUrl != null) {
         // Log the image URL to verify it's valid
         print("Image URL from Cloudinary: $imageUrl");

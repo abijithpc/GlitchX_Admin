@@ -6,7 +6,7 @@ abstract class ProductEvent {}
 
 class UploadProductEvent extends ProductEvent {
   final ProductModel product;
-  final File image;
+  final List<File> image;
 
   UploadProductEvent({required this.product, required this.image});
 }

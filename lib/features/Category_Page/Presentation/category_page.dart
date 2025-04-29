@@ -7,6 +7,7 @@ import 'package:glitchx_admin/features/Category_Page/Domain/Models/category_mode
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_bloc.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_event.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_state.dart';
+import 'package:glitchx_admin/features/Category_Page/Presentation/widget/delete_edit.dart';
 import 'package:uuid/uuid.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -50,9 +51,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       return const Center(child: CupertinoActivityIndicator());
                     } else if (state is CategoryLoaded) {
                       if (state.categories.isEmpty) {
-                        return const Center(
-                          child: Text("No Brand available"),
-                        );
+                        return const Center(child: Text("No Brand available"));
                       }
                       return ListView.separated(
                         padding: const EdgeInsets.all(16),
@@ -90,7 +89,10 @@ class _CategoryPageState extends State<CategoryPage> {
                                 color: CupertinoColors.systemGrey,
                               ),
                               onTap: () {
-                                // Handle tap
+                                showEditCategorySheet(context, category);
+                              },
+                              onLongPress: () {
+                                showDeleteCategoryDialog(context, category.id);
                               },
                             ),
                           );
@@ -109,7 +111,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 child: CupertinoButton.filled(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   borderRadius: BorderRadius.circular(14),
-                  onPressed: () => _showAddCategorySheet(context),
+                  onPressed: () => showAddCategorySheet(context),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -126,91 +128,6 @@ class _CategoryPageState extends State<CategoryPage> {
           screenWidth: screenWidth,
         ),
       ),
-    );
-  }
-
-  void _showAddCategorySheet(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
-    final uuid = const Uuid();
-
-    showCupertinoModalPopup(
-      context: context,
-      builder:
-          (_) => BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: CupertinoPopupSurface(
-              isSurfacePainted: true,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.systemGroupedBackground,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
-                  ),
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Add New Category",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      CupertinoTextField(
-                        controller: controller,
-                        placeholder: "Enter Brand name",
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12.withOpacity(0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      CupertinoButton.filled(
-                        onPressed: () {
-                          final name = controller.text.trim();
-                          if (name.isNotEmpty) {
-                            final newCategory = CategoryModels(
-                              id: uuid.v4(),
-                              name: name,
-                            );
-                            context.read<CategoryBloc>().add(
-                              AddCategoryEvent(newCategory),
-                            );
-                            Navigator.pop(context);
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 60,
-                        ),
-                        child: const Text(
-                          "Add",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
     );
   }
 }

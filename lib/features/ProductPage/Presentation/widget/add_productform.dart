@@ -29,18 +29,15 @@ class _AddProductFormState extends State<AddProductForm> {
   final TextEditingController _minSpecsController = TextEditingController();
   final TextEditingController _recSpecsController = TextEditingController();
 
-  // final Uuid _uuid = Uuid();
-
-  File? _imageFile;
+  List<File> _imageFile = [];
   String? _selectedCategory;
   DateTime? _releaseDate;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
+    final pickedFile = await ImagePicker().pickMultiImage(imageQuality: 80);
+    setState(
+      () => _imageFile = pickedFile.map((xfile) => File(xfile.path)).toList(),
     );
-    if (pickedFile != null) setState(() => _imageFile = File(pickedFile.path));
   }
 
   Future<void> _pickReleaseDate() async {
@@ -64,55 +61,111 @@ class _AddProductFormState extends State<AddProductForm> {
           _buildField(
             "Game Name",
             CupertinoIcons.game_controller,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _nameController,
+            validator: (value) {
+              String pattern = r'^[a-zA-Z0-9_]+$';
+              RegExp regExp = RegExp(pattern);
+              if (value == null || value.isEmpty) {
+                return "Enter Product Name Name";
+              }
+              if (!regExp.hasMatch(value)) {
+                return 'Only letters, numbers & underscores allowed';
+              }
+              return null;
+            },
           ),
           _spacer(),
           _buildField(
             "Description",
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             CupertinoIcons.doc_text_fill,
             _descController,
             maxLines: 3,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty ? "Enter description" : null,
           ),
           _spacer(),
           _buildDropdown(
             "Category",
             CupertinoIcons.cube_box_fill,
             widget.categories,
+            validator: (value) => value == null ? "Select category" : null,
           ),
           _spacer(),
           _buildField(
             "Disk Count",
             CupertinoIcons.number,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _diskCountController,
             keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Enter disk count";
+              } else if (int.tryParse(value) == null) {
+                return "Enter a valid number for disk count";
+              }
+              return null;
+            },
           ),
           _spacer(),
           _buildField(
             "Price (₹)",
             CupertinoIcons.money_dollar,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _priceController,
             keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Enter price";
+              } else if (double.tryParse(value) == null) {
+                return "Enter a valid price";
+              }
+              return null;
+            },
           ),
           _spacer(),
           _buildField(
             "Stock",
             CupertinoIcons.archivebox_fill,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _stockController,
             keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Enter stock quantity";
+              } else if (int.tryParse(value) == null) {
+                return "Enter a valid stock number";
+              }
+              return null;
+            },
           ),
           _spacer(),
           _buildField(
             "Minimum Specs",
             CupertinoIcons.memories,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _minSpecsController,
             maxLines: 2,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? "Enter minimum specs"
+                        : null,
           ),
           _spacer(),
           _buildField(
             "Recommended Specs",
             CupertinoIcons.star_fill,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             _recSpecsController,
             maxLines: 2,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? "Enter recommended specs"
+                        : null,
           ),
           _spacer(),
           InkWell(
@@ -170,7 +223,7 @@ class _AddProductFormState extends State<AddProductForm> {
     );
 
     context.read<ProductBloc>().add(
-      UploadProductEvent(product: product, image: _imageFile!),
+      UploadProductEvent(product: product, image: _imageFile),
     );
     Navigator.pop(context);
   }
@@ -191,10 +244,14 @@ class _AddProductFormState extends State<AddProductForm> {
             borderRadius: BorderRadius.circular(12),
           ),
           child:
-              _imageFile != null
+              _imageFile
+                      .isNotEmpty // Check if the list is not empty
                   ? ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.file(_imageFile!, fit: BoxFit.contain),
+                    child: Image.file(
+                      _imageFile.first, // Safely access first image
+                      fit: BoxFit.contain,
+                    ),
                   )
                   : const Center(
                     child: Column(
@@ -224,22 +281,29 @@ class _AddProductFormState extends State<AddProductForm> {
     TextEditingController controller, {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+    AutovalidateMode? autovalidateMode,
   }) {
     return TextFormField(
+      autovalidateMode: autovalidateMode,
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      validator:
-          (value) => value == null || value.isEmpty ? "Enter $label" : null,
+      validator: validator,
       decoration: _inputDecoration(label, icon),
     );
   }
 
-  Widget _buildDropdown(String label, IconData icon, List<String> items) {
+  Widget _buildDropdown(
+    String label,
+    IconData icon,
+    List<String> items, {
+    required String? Function(String?) validator,
+  }) {
     return DropdownButtonFormField<String>(
       value: _selectedCategory,
       onChanged: (val) => setState(() => _selectedCategory = val),
-      validator: (val) => val == null ? "Select $label" : null,
+      validator: validator,
       decoration: _inputDecoration(label, icon),
       items:
           items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),

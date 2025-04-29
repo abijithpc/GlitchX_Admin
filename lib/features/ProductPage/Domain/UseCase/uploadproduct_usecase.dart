@@ -8,7 +8,7 @@ class UploadproductUsecase {
 
   UploadproductUsecase({required this.repository});
 
-  Future<void> call(ProductModel product, File image) {
+  Future<void> call(ProductModel product, List<File> image) {
     return repository.uploadProduct(product, image);
   }
 }
