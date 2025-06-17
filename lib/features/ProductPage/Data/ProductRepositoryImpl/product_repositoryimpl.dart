@@ -12,13 +12,14 @@ class ProductRepositoryimpl implements ProductRepository {
   @override
   Future<void> uploadProduct(ProductModel product, List<File> image) async {
     try {
-      final imageUrl = await productDataRemotesource.uploadImage(image);
+      // Assuming `uploadImages` returns a List<String> of URLs
+      final imageUrls = await productDataRemotesource.uploadImages(image);
 
       final updatedProduct = ProductModel(
         name: product.name,
         category: product.category,
         description: product.description,
-        imageUrl: imageUrl ?? '',
+        imageUrls: imageUrls.isNotEmpty ? imageUrls : [],
         price: product.price,
         stock: product.stock,
         diskCount: product.diskCount,
@@ -82,30 +83,31 @@ class ProductRepositoryimpl implements ProductRepository {
   }
 
   @override
+  @override
   Future<String?> editProductImage(File imageFile, String productId) async {
     try {
-      // Upload image to Cloudinary
-      final imageUrl = await productDataRemotesource.uploadImage([imageFile]);
-      if (imageUrl != null) {
-        // Log the image URL to verify it's valid
+      final imageUrls = await productDataRemotesource.uploadImages([imageFile]);
+
+      if (imageUrls != null && imageUrls.isNotEmpty) {
+        final imageUrl = imageUrls.first;
+
         print("Image URL from Cloudinary: $imageUrl");
 
-        // Update Firestore with the new image URL
         try {
-          await productDataRemotesource.updateProductImageInFirestore(
+          await productDataRemotesource.updateProductImagesInFirestore(
             productId,
-            imageUrl,
+            [imageUrl],
           );
         } catch (e) {
           print("Error updating product image in Firestore: $e");
           throw Exception('Error updating product image in Firestore: $e');
         }
+
+        return imageUrl;
       } else {
         print("Failed to upload image to Cloudinary");
-        throw Exception("Image URL is null, upload failed.");
+        throw Exception("Image URL is null or empty, upload failed.");
       }
-
-      return imageUrl;
     } catch (e) {
       print("Error in editProductImage: $e");
       throw Exception('Error editing product image: $e');

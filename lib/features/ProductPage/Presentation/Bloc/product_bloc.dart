@@ -88,7 +88,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
               products.map((product) {
                 if (product.id == event.productId) {
                   return product.copyWith(
-                    imageUrl: imageUrl,
+                    imageUrls: [imageUrl],
                   ); // Update the image URL
                 }
                 return product;

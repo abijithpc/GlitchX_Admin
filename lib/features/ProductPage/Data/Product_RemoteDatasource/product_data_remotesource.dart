@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,50 +19,51 @@ class ProductDataRemotesource {
       var productRef = await firestore
           .collection('products')
           .add(product.toMap());
-
       product.id = productRef.id;
-
       await productRef.update({'id': product.id});
     } catch (e) {
-      // Catching any errors that occur during product addition
       throw Exception('Error adding product: $e');
     }
   }
 
-  /// Uploads the image to Cloudinary and returns the secure URL
-  Future<String?> uploadImage(List<File> imageFile) async {
-    try {
-      final url = Uri.parse(
-        "https://api.cloudinary.com/v1_1/ditsarti8/image/upload",
-      );
+  /// Uploads multiple images to Cloudinary and returns the list of secure URLs
+  Future<List<String>> uploadImages(List<File> imageFiles) async {
+    List<String> imageUrls = [];
 
-      final file = imageFile[0];
+    for (File file in imageFiles) {
+      try {
+        final url = Uri.parse(
+          "https://api.cloudinary.com/v1_1/ditsarti8/image/upload",
+        );
 
-      final request =
-          http.MultipartRequest("POST", url)
-            ..fields['upload_preset'] = 'glitchx_upload'
-            ..fields['folder'] = ':products'
-            ..files.add(await http.MultipartFile.fromPath('file', file.path));
+        final request =
+            http.MultipartRequest("POST", url)
+              ..fields['upload_preset'] = 'glitchx_upload'
+              ..fields['folder'] = 'products'
+              ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
-      final response = await request.send();
-      log('${response.statusCode}');
-      if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final jsonResponse = json.decode(responseBody);
-        return jsonResponse['secure_url'] as String?;
-      } else {
-        return null;
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          final responseBody = await response.stream.bytesToString();
+          final jsonResponse = json.decode(responseBody);
+          final imageUrl = jsonResponse['secure_url'] as String?;
+          if (imageUrl != null) imageUrls.add(imageUrl);
+        } else {
+          log("Failed to upload image: ${response.statusCode}");
+        }
+      } catch (e) {
+        log("Error uploading image: $e");
       }
-    } catch (e) {
-      log("Response $e");
-      return null;
     }
+
+    return imageUrls;
   }
 
+  /// Fetch all products from Firestore
   Future<List<ProductModel>> getProducts() async {
     try {
       final querySnapshot = await firestore.collection('products').get();
-      log('$querySnapshot');
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
         data['id'] = doc.id;
@@ -72,6 +74,7 @@ class ProductDataRemotesource {
     }
   }
 
+  /// Update a product in Firestore
   Future<void> updateProduct(ProductModel product) async {
     try {
       await firestore.collection('products').doc(product.id).update({
@@ -83,52 +86,40 @@ class ProductDataRemotesource {
         'minSpecs': product.minSpecs,
         'recSpecs': product.recSpecs,
         'releaseDate': product.releaseDate,
-        'imageUrl': product.imageUrl, // Include imageUrl if updated
+        'imageUrls': product.imageUrls, // multiple image URLs
       });
     } catch (e) {
       throw Exception('Error updating product in Firestore: $e');
     }
   }
 
+  /// Delete a product from Firestore
   Future<void> deleteProduct(String productId) async {
     try {
       await firestore.collection('products').doc(productId).delete();
     } catch (e) {
-      throw Exception('Failed to Delete the Product : $e');
+      throw Exception('Failed to delete the product: $e');
     }
   }
 
-  // Future<void> updateProduct(ProductModel product) async {
-  //   try {
-  //     await firestore
-  //         .collection('products')
-  //         .doc(product.id)
-  //         .update(product.toMap());
-  //   } catch (e) {
-  //     throw Exception('Error updating product in FireStore : $e');
-  //   }
-  // }
-
-  Future<void> updateProductImageInFirestore(
+  /// Update only the image URLs of a product
+  Future<void> updateProductImagesInFirestore(
     String productId,
-    String imageUrl,
+    List<String> imageUrls,
   ) async {
     try {
-      await firestore
-          .collection('products')
-          .doc(productId)
-          .update({'imageUrl': imageUrl})
-          .then((_) async {
-            log("Product image updated to: $imageUrl");
+      await firestore.collection('products').doc(productId).update({
+        'imageUrls': imageUrls,
+      });
 
-            // Fetch the document again to check if the update was successful
-            var docSnapshot =
-                await firestore.collection('products').doc(productId).get();
-            log("Updated product data: ${docSnapshot.data()}");
-          });
+      log("Updated product images: $imageUrls");
+
+      var docSnapshot =
+          await firestore.collection('products').doc(productId).get();
+      log("Updated product data: ${docSnapshot.data()}");
     } catch (e) {
-      log('Error updating product image in Firestore: $e');
-      throw Exception('Error updating product image in Firestore: $e');
+      log('Error updating product images in Firestore: $e');
+      throw Exception('Error updating product images in Firestore: $e');
     }
   }
 }

@@ -28,6 +28,18 @@ class _ProductPageState extends State<ProductPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text(
+          'Products',
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
       backgroundColor: const Color(0xFFF4F5F7),
       body: ScreenBackGround(
         screenHeight: screenHeight,
@@ -39,17 +51,7 @@ class _ProductPageState extends State<ProductPage> {
                 padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Products',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Icon(CupertinoIcons.cart_fill, color: Colors.deepPurple),
-                  ],
+                  children: [],
                 ),
               ),
               Expanded(

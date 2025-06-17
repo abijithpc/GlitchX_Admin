@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:glitchx_admin/Core/Widgets/ScreenBackground/screen_background.dart';
 import 'package:glitchx_admin/Core/Widgets/sign_out.dart';
 import 'package:glitchx_admin/features/Auth/LoginPage/Presentation/login_page.dart';
-import 'package:glitchx_admin/features/HomePage/Presentation/widget/screens.dart';
+import 'package:glitchx_admin/features/Home_Page/Presentation/widget/screens.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class SidebarxScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _SidebarxScreenState extends State<SidebarxScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 148, 146, 146),
+        backgroundColor: Colors.black,
         actions: [
           GestureDetector(
             onTap: () {
@@ -94,6 +94,7 @@ class _SidebarxScreenState extends State<SidebarxScreen> {
               ),
               items: [
                 SidebarXItem(icon: Icons.dashboard, label: "Dashboard"),
+                SidebarXItem(icon: Icons.person, label: 'User'),
                 SidebarXItem(icon: Icons.shopping_cart, label: "Order"),
                 SidebarXItem(icon: Icons.category, label: "Category"),
                 SidebarXItem(icon: Icons.shopping_bag, label: "Product"),

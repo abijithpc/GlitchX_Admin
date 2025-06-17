@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:glitchx_admin/features/Category_Page/Domain/Models/category_models.dart';
 
 abstract class CategoryEvent {}
@@ -25,4 +27,9 @@ class DeleteCategoryEvent extends CategoryEvent {
 class UpdateCategoryEvent extends CategoryEvent {
   final CategoryModels category;
   UpdateCategoryEvent(this.category);
+}
+
+class UploadCategoryImageEvent extends CategoryEvent {
+  final File image;
+  UploadCategoryImageEvent(this.image);
 }

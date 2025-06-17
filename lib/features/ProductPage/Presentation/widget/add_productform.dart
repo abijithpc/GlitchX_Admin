@@ -219,7 +219,7 @@ class _AddProductFormState extends State<AddProductForm> {
       minSpecs: _minSpecsController.text.trim(),
       recSpecs: _recSpecsController.text.trim(),
       releaseDate: _releaseDate!,
-      imageUrl: "",
+      imageUrls: [],
     );
 
     context.read<ProductBloc>().add(
@@ -239,19 +239,55 @@ class _AddProductFormState extends State<AddProductForm> {
         child: Container(
           height: 180,
           width: double.infinity,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
           ),
           child:
-              _imageFile
-                      .isNotEmpty // Check if the list is not empty
-                  ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      _imageFile.first, // Safely access first image
-                      fit: BoxFit.contain,
-                    ),
+              _imageFile.isNotEmpty
+                  ? GridView.builder(
+                    itemCount: _imageFile.length,
+                    scrollDirection: Axis.horizontal,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 1,
+                          childAspectRatio: 1,
+                          mainAxisSpacing: 8,
+                        ),
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              _imageFile[index],
+                              fit: BoxFit.cover,
+                              width: 140,
+                              height: 140,
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() => _imageFile.removeAt(index));
+                              },
+                              child: const CircleAvatar(
+                                radius: 12,
+                                backgroundColor: Colors.black54,
+                                child: Icon(
+                                  Icons.close,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   )
                   : const Center(
                     child: Column(
@@ -264,7 +300,7 @@ class _AddProductFormState extends State<AddProductForm> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          "Tap to upload image",
+                          "Tap to upload image(s)",
                           style: TextStyle(color: CupertinoColors.activeBlue),
                         ),
                       ],

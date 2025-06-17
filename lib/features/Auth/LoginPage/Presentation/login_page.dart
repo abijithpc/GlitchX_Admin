@@ -6,7 +6,7 @@ import 'package:glitchx_admin/features/Auth/LoginPage/Presentation/Bloc/auth_blo
 import 'package:glitchx_admin/features/Auth/LoginPage/Presentation/Bloc/auth_event.dart';
 import 'package:glitchx_admin/features/Auth/LoginPage/Presentation/Bloc/auth_state.dart';
 import 'package:glitchx_admin/features/Auth/LoginPage/Presentation/widget/custom_input_field.dart';
-import 'package:glitchx_admin/features/HomePage/Presentation/widget/sidebarx.dart';
+import 'package:glitchx_admin/features/Home_Page/Presentation/widget/sidebarx.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

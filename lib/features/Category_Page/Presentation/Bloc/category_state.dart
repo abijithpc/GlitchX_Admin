@@ -19,3 +19,8 @@ class CategoryError extends CategoryState {
 class CategoryDeleted extends CategoryState {}
 
 class CategoryUpdated extends CategoryState {}
+
+class CategoryImageUploaded extends CategoryState {
+  final String imageUrl;
+  CategoryImageUploaded(this.imageUrl);
+}

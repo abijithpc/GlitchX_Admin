@@ -9,8 +9,10 @@ import 'package:glitchx_admin/features/ProductPage/Domain/models/product_model.d
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_event.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_state.dart';
+import 'package:glitchx_admin/features/ProductPage/Presentation/widget/editpro_calender.dart';
+import 'package:glitchx_admin/features/ProductPage/Presentation/widget/editproduct_textfield.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+
 
 class EditProductPage extends StatefulWidget {
   final ProductModel product;
@@ -36,9 +38,8 @@ class _EditProductPageState extends State<EditProductPage>
   final TextEditingController _recSpecsController = TextEditingController();
 
   DateTime? _releaseDate;
-  String? _imageUrl;
+  List<String> _imageUrls = [];
   File? _imageFile;
-  String? _newImageUrl; // To store new image URL
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _EditProductPageState extends State<EditProductPage>
     _minSpecsController.text = widget.product.minSpecs;
     _recSpecsController.text = widget.product.recSpecs;
     _releaseDate = widget.product.releaseDate;
-    _imageUrl = widget.product.imageUrl;
+    _imageUrls = widget.product.imageUrls;
   }
 
   @override
@@ -80,13 +81,13 @@ class _EditProductPageState extends State<EditProductPage>
   }
 
   void _saveChanges() async {
-    String updatedImageUrl = widget.product.imageUrl;
+    List<String> updatedImageUrl = widget.product.imageUrls;
 
     // If the user has selected a new image, upload it to Firebase and get the URL
     if (_imageFile != null) {
-      updatedImageUrl = await _uploadImageToFirebase(
-        _imageFile!,
-      ); // Upload image to Firebase and get the URL
+      updatedImageUrl =
+          (await _uploadImageToFirebase(_imageFile!))
+              as List<String>; // Upload image to Firebase and get the URL
     }
 
     final updatedProduct = ProductModel(
@@ -100,7 +101,7 @@ class _EditProductPageState extends State<EditProductPage>
       minSpecs: _minSpecsController.text,
       recSpecs: _recSpecsController.text,
       releaseDate: _releaseDate ?? DateTime.now(),
-      imageUrl: updatedImageUrl, // Use the updated image URL here
+      imageUrls: updatedImageUrl, // Use the updated image URL here
     );
 
     context.read<ProductBloc>().add(EditProductEvent(updatedProduct));
@@ -168,7 +169,7 @@ class _EditProductPageState extends State<EditProductPage>
         if (image != null) {
           setState(() {
             _imageFile = File(image.path);
-            _imageUrl = null; // Set _imageUrl to null to indicate a new image
+            _imageUrls = []; // Set _imageUrl to null to indicate a new image
           });
           context.read<ProductBloc>().add(
             EditProductImageSubmitted(
@@ -191,9 +192,9 @@ class _EditProductPageState extends State<EditProductPage>
                         image: FileImage(_imageFile!),
                         fit: BoxFit.cover,
                       )
-                      : (_imageUrl != null
+                      : (_imageUrls != null
                           ? DecorationImage(
-                            image: NetworkImage(_imageUrl!),
+                            image: NetworkImage(_imageUrls.first),
                             fit: BoxFit.cover,
                           )
                           : const DecorationImage(
@@ -275,156 +276,7 @@ class _EditProductPageState extends State<EditProductPage>
                 return SafeArea(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CupertinoNavigationBar(
-                          middle: Text(
-                            'Edit Product',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          backgroundColor: Colors.transparent,
-                          border: null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildImagePicker(),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          label: 'Product Name',
-                          icon: CupertinoIcons.cube_box,
-                          controller: _nameController,
-                        ),
-                        _buildTextField(
-                          label: 'Category',
-                          icon: CupertinoIcons.tag,
-                          controller: _categoryController,
-                        ),
-                        _buildTextField(
-                          label: 'Price',
-                          icon: CupertinoIcons.money_dollar_circle,
-                          controller: _priceController,
-                          type: TextInputType.number,
-                        ),
-                        _buildTextField(
-                          label: 'Stock',
-                          icon: CupertinoIcons.cart,
-                          controller: _stockController,
-                          type: TextInputType.number,
-                        ),
-                        _buildTextField(
-                          label: 'Disk Count',
-                          icon: CupertinoIcons.floppy_disk,
-                          controller: _diskCountController,
-                          type: TextInputType.number,
-                        ),
-                        _buildTextField(
-                          label: 'Description',
-                          icon: CupertinoIcons.info_circle,
-                          controller: _descriptionController,
-                        ),
-                        _buildTextField(
-                          label: 'Minimum Specs',
-                          icon: CupertinoIcons.settings,
-                          controller: _minSpecsController,
-                        ),
-                        _buildTextField(
-                          label: 'Recommended Specs',
-                          icon: CupertinoIcons.checkmark_seal,
-                          controller: _recSpecsController,
-                        ),
-                        const SizedBox(height: 15),
-                        GestureDetector(
-                          onTap: _selectDate,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(128),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.deepPurple.withAlpha(38),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  CupertinoIcons.calendar_today,
-                                  color: Colors.deepPurple,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _releaseDate == null
-                                        ? 'Select Release Date'
-                                        : DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(_releaseDate!),
-                                    style: TextStyle(
-                                      color:
-                                          _releaseDate == null
-                                              ? Colors.grey[600]
-                                              : Colors.black87,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        Center(
-                          child: CupertinoButton(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.25,
-                              vertical: 16,
-                            ),
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.deepPurple.withAlpha(204),
-                            onPressed: () {
-                              _saveChanges();
-                              Navigator.pop(context);
-                              showCupertinoDialog(
-                                context: context,
-                                builder:
-                                    (context) => CupertinoAlertDialog(
-                                      title: const Text('Product Updated'),
-                                      content: const Text(
-                                        'Your changes have been saved successfully!',
-                                      ),
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          isDefaultAction: true,
-                                          child: const Text('OK'),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                              );
-                            },
-                            child: const Text(
-                              'Save Changes',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                    child: EditProductForm(screenWidth, context),
                   ),
                 );
               } else if (state is ProductFailure) {
@@ -438,6 +290,126 @@ class _EditProductPageState extends State<EditProductPage>
         screenHeight: screenHeight,
         screenWidth: screenWidth,
       ),
+    );
+  }
+
+  Column EditProductForm(double screenWidth, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const CupertinoNavigationBar(
+          middle: Text(
+            'Edit Product',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          backgroundColor: Colors.transparent,
+          border: null,
+        ),
+        const SizedBox(height: 20),
+        _buildImagePicker(),
+        const SizedBox(height: 20),
+        TextFieldWidget(
+          label: 'Product Name',
+          icon: Icons.edit,
+          controller: _nameController,
+        ),
+        TextFieldWidget(
+          label: 'Category',
+          icon: Icons.category,
+          controller: _categoryController,
+        ),
+        TextFieldWidget(
+          label: 'Price',
+          icon: Icons.attach_money,
+          controller: _priceController,
+          type: TextInputType.number,
+        ),
+        TextFieldWidget(
+          label: 'Description',
+          icon: Icons.description,
+          controller: _descriptionController,
+        ),
+        TextFieldWidget(
+          label: 'Disk Count',
+          icon: Icons.storage,
+          controller: _diskCountController,
+          type: TextInputType.number,
+        ),
+        TextFieldWidget(
+          label: 'Stock',
+          icon: Icons.shop,
+          controller: _stockController,
+          type: TextInputType.number,
+        ),
+        TextFieldWidget(
+          label: 'Minimum Specs',
+          icon: Icons.storage,
+          controller: _minSpecsController,
+        ),
+        TextFieldWidget(
+          label: 'Recommended Specs',
+          icon: Icons.storage,
+          controller: _recSpecsController,
+        ),
+        const SizedBox(height: 15),
+        GestureDetector(
+          onTap: _selectDate,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(128),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.deepPurple.withAlpha(38),
+                  blurRadius: 8,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: EditProductCalender(releaseDate: _releaseDate),
+          ),
+        ),
+        const SizedBox(height: 30),
+        Center(
+          child: CupertinoButton(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.25,
+              vertical: 16,
+            ),
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.deepPurple.withAlpha(204),
+            onPressed: () {
+              _saveChanges();
+              Navigator.pop(context);
+              showCupertinoDialog(
+                context: context,
+                builder:
+                    (context) => CupertinoAlertDialog(
+                      title: const Text('Product Updated'),
+                      content: const Text(
+                        'Your changes have been saved successfully!',
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+              );
+            },
+            child: const Text(
+              'Save Changes',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+        ),
+        const SizedBox(height: 40),
+      ],
     );
   }
 }

@@ -16,7 +16,23 @@ import 'package:glitchx_admin/features/Category_Page/Domain/UseCase/edit_categor
 import 'package:glitchx_admin/features/Category_Page/Domain/UseCase/get_category_usecase.dart';
 import 'package:glitchx_admin/features/Category_Page/Domain/category_repository/category_repository.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_bloc.dart';
-import 'package:glitchx_admin/features/HomePage/Presentation/Bloc/home_bloc.dart';
+import 'package:glitchx_admin/features/Home_Page/Data/Revenue_RemoteDatasource/revenue_remotedatasoource.dart';
+import 'package:glitchx_admin/features/Home_Page/Data/Revenue_RepositoryImpl/revenue_repo_impl.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/Revenue_repository/revenue_repository.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/getorder_range_usecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/getordercount_usecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/getrevenue_bymonthusecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/getrevenueday_usecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/getrevenueyear_usecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/gettotal_quantityrange.dart';
+import 'package:glitchx_admin/features/Home_Page/Domain/UseCase/gettotaquantity_usecase.dart';
+import 'package:glitchx_admin/features/Home_Page/Presentation/Bloc/revenue_bloc.dart';
+import 'package:glitchx_admin/features/Orders_Page/Data/OrderRepositoryImpl/order_repositoryimpl.dart';
+import 'package:glitchx_admin/features/Orders_Page/Data/Order_RemoteDatasource/order_remotedatasource.dart';
+import 'package:glitchx_admin/features/Orders_Page/Domain/UseCase/fetch_order_usecase.dart';
+import 'package:glitchx_admin/features/Orders_Page/Domain/UseCase/order_usecase.dart';
+import 'package:glitchx_admin/features/Orders_Page/Domain/order_repository/order_repository.dart';
+import 'package:glitchx_admin/features/Orders_Page/Presentation/Bloc/order_bloc.dart';
 import 'package:glitchx_admin/features/ProductPage/Data/ProductRepositoryImpl/product_repositoryimpl.dart';
 import 'package:glitchx_admin/features/ProductPage/Data/Product_RemoteDatasource/product_data_remotesource.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/Product_repository/product_repository.dart';
@@ -26,6 +42,13 @@ import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/get_product_us
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/update_profile_image_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/uploadproduct_usecase.dart';
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
+import 'package:glitchx_admin/features/UserPage/Data/User_RemoteDatasource/user_dataremotesource.dart';
+import 'package:glitchx_admin/features/UserPage/Data/User_RepositoryImpl/user_reposiotryimpl.dart';
+import 'package:glitchx_admin/features/UserPage/Domain/UseCase/blockuser_usecase.dart';
+import 'package:glitchx_admin/features/UserPage/Domain/UseCase/get_user_usecase.dart';
+import 'package:glitchx_admin/features/UserPage/Domain/UseCase/unblocuser_usecase.dart';
+import 'package:glitchx_admin/features/UserPage/Domain/User_repository/user_repository.dart';
+import 'package:glitchx_admin/features/UserPage/Presentation/Bloc/user_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -51,7 +74,15 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductDataRemotesource>(
     () => ProductDataRemotesource(firestore: sl(), storage: sl()),
   );
-
+  sl.registerLazySingleton<UserDataremotesource>(
+    () => UserDataremotesource(sl()),
+  );
+  sl.registerLazySingleton<OrderRemotedatasource>(
+    () => OrderRemotedatasource(sl()),
+  );
+  sl.registerLazySingleton<RevenueRemoteDataSource>(
+    () => RevenueRemoteDataSource(sl()),
+  );
   //repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(sl(), sl()),
@@ -62,6 +93,11 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryimpl(productDataRemotesource: sl()),
+  );
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
+  sl.registerLazySingleton<OrderRepository>(() => OrderRepositoryimpl(sl()));
+  sl.registerLazySingleton<RevenueRepository>(
+    () => RevenueRepositoryImpl(sl()),
   );
 
   //UseCase
@@ -78,12 +114,25 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => UpdateCategoryUsecase(categoryRepository: sl()),
   );
+  sl.registerLazySingleton(() => GetUsersUseCase(sl()));
+  sl.registerLazySingleton(() => BlockUserUseCase(sl()));
+  sl.registerLazySingleton(() => UnblockUserUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateOrderStatusUsecase(sl()));
+  sl.registerLazySingleton(() => FetchOrdersUseCase(sl()));
+  sl.registerLazySingleton(() => GetRevenueByDayUseCase(sl()));
+  sl.registerLazySingleton(() => GetRevenueByMonthUseCase(sl()));
+  sl.registerLazySingleton(() => GetRevenueByYearUseCase(sl()));
+  // sl.registerLazySingleton(() => GetPaidOrderCount(sl()));
+  sl.registerLazySingleton(() => GetTotalSoldQuantityUseCase(sl()));
+  sl.registerLazySingleton(() => GetOrderCountUseCase(sl()));
+  sl.registerLazySingleton(() => GetOrdersInRangeUseCase(sl()));
+  sl.registerLazySingleton(() => GetTotalQuantityInRangeUseCase(sl()));
 
   //Bloc
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(adminLoginUsecase: sl(), checkAuthStatusUseCase: sl()),
   );
-  sl.registerFactory(() => HomeBloc());
+  // sl.registerFactory(() => HomeBloc());
 
   sl.registerFactory(
     () => CategoryBloc(
@@ -101,6 +150,20 @@ Future<void> init() async {
       deleteProductUsecase: sl(),
       editProductUsecase: sl(),
       updateProductImageUsecase: sl(),
+    ),
+  );
+  sl.registerFactory(() => UserBloc(sl(), sl(), sl()));
+  sl.registerFactory(() => OrderBloc(sl(), sl()));
+  sl.registerFactory(
+    () => RevenueBloc(
+      countUseCase: sl(),
+      // getPaidOrdersCountUseCase: sl(),
+      getRevenueByDayUseCase: sl(),
+      getRevenueByMonthUseCase: sl(),
+      getRevenueByYearUseCase: sl(),
+      quantityUseCase: sl(),
+      ordersInRangeUseCase: sl(),
+      totalQuantityInRangeUseCase: sl(),
     ),
   );
 }

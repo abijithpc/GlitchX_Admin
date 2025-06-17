@@ -1,14 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glitchx_admin/Core/Widgets/ScreenBackground/screen_background.dart';
-import 'package:glitchx_admin/features/Category_Page/Domain/Models/category_models.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_bloc.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_event.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/Bloc/category_state.dart';
 import 'package:glitchx_admin/features/Category_Page/Presentation/widget/delete_edit.dart';
-import 'package:uuid/uuid.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -29,11 +26,11 @@ class _CategoryPageState extends State<CategoryPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return CupertinoPageScaffold(
-      backgroundColor: const Color.fromARGB(255, 148, 146, 146),
+      backgroundColor: Colors.black,
       navigationBar: CupertinoNavigationBar(
         middle: const Text(
           'Brands',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
         backgroundColor: CupertinoColors.systemGroupedBackground.withOpacity(
           0.95,

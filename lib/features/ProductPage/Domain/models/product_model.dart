@@ -11,7 +11,7 @@ class ProductModel {
   final String minSpecs;
   final String recSpecs;
   final DateTime releaseDate;
-  final String imageUrl;
+  final List<String> imageUrls; // ✅ updated
 
   ProductModel({
     this.id,
@@ -24,7 +24,7 @@ class ProductModel {
     required this.minSpecs,
     required this.recSpecs,
     required this.releaseDate,
-    required this.imageUrl,
+    required this.imageUrls, // ✅ updated
   });
 
   Map<String, dynamic> toMap() {
@@ -39,7 +39,7 @@ class ProductModel {
       'minSpecs': minSpecs,
       'recSpecs': recSpecs,
       'releaseDate': releaseDate,
-      'imageUrl': imageUrl,
+      'imageUrls': imageUrls, // ✅ updated
     };
   }
 
@@ -55,7 +55,7 @@ class ProductModel {
       minSpecs: map['minSpecs'],
       recSpecs: map['recSpecs'],
       releaseDate: _fromTimestamp(map['releaseDate']),
-      imageUrl: map['imageUrl'],
+      imageUrls: List<String>.from(map['imageUrls'] ?? []), // ✅ updated
     );
   }
 
@@ -66,13 +66,11 @@ class ProductModel {
     return DateTime.now();
   }
 
-  // Override toString to display object properties in logs
   @override
   String toString() {
-    return 'ProductModel{id: $id, name: $name, description: $description, category: $category, diskCount: $diskCount, price: $price, stock: $stock, minSpecs: $minSpecs, recSpecs: $recSpecs, releaseDate: $releaseDate, imageUrl: $imageUrl}';
+    return 'ProductModel{id: $id, name: $name, description: $description, category: $category, diskCount: $diskCount, price: $price, stock: $stock, minSpecs: $minSpecs, recSpecs: $recSpecs, releaseDate: $releaseDate, imageUrls: $imageUrls}';
   }
 
-  // CopyWith method
   ProductModel copyWith({
     String? id,
     String? name,
@@ -84,7 +82,7 @@ class ProductModel {
     String? minSpecs,
     String? recSpecs,
     DateTime? releaseDate,
-    String? imageUrl,
+    List<String>? imageUrls, // ✅ updated
   }) {
     return ProductModel(
       id: id ?? this.id,
@@ -97,7 +95,7 @@ class ProductModel {
       minSpecs: minSpecs ?? this.minSpecs,
       recSpecs: recSpecs ?? this.recSpecs,
       releaseDate: releaseDate ?? this.releaseDate,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imageUrls: imageUrls ?? this.imageUrls, // ✅ updated
     );
   }
 }
