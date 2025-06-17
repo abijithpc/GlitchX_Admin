@@ -75,6 +75,9 @@ class RevenueRemoteDataSource {
             )
             .where('orderedAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
             .get();
+    for (final doc in snapshot.docs) {
+      print(doc['orderedAt']);
+    }
 
     return snapshot.docs
         .map((doc) => RevenueModel.fromMap(doc.data()))

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:glitchx_admin/features/Orders_Page/Domain/Model/address_model.dart';
 
 class OrderItem {
   final String productId;
@@ -52,26 +53,35 @@ class OrderItem {
 class OrderModel {
   final String id;
   final String userId;
-  // final List<OrderItem> items;
+  final List<OrderItem> items;
   final double total;
+  final AddressModel address;
   final String status;
   final Timestamp timestamp;
 
   OrderModel({
     required this.id,
     required this.userId,
-    // required this.items,
+    required this.items,
     required this.total,
     required this.status,
     required this.timestamp,
+    required this.address,
   });
 
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
     return OrderModel(
       id: id,
       userId: map['userId'] ?? '',
+      items:
+          (map['items'] as List<dynamic>?)
+              ?.map((e) => OrderItem.fromMap(e))
+              .toList() ??
+          [], // ✅ parse items
       total: (map['totalAmount'] ?? 0).toDouble(),
       status: map['status'] ?? 'Pending',
+
+      address: AddressModel.fromMap(map['address'] ?? {}),
       timestamp:
           map['orderedAt'] is Timestamp
               ? map['orderedAt']
@@ -82,10 +92,11 @@ class OrderModel {
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
-      // 'items': items.map((item) => item.toMap()).toList(),
+      'items': items.map((item) => item.toMap()).toList(),
       'total': total,
       'status': status,
       'timestamp': timestamp,
+      // 'address': address,
     };
   }
 }

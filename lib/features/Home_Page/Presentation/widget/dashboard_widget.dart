@@ -4,9 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glitchx_admin/features/Home_Page/Presentation/Bloc/revenue_bloc.dart';
 import 'package:glitchx_admin/features/Home_Page/Presentation/Bloc/revenue_event.dart';
 import 'package:glitchx_admin/features/Home_Page/Presentation/Bloc/revenue_state.dart';
+import 'package:glitchx_admin/features/Home_Page/Presentation/widget/daterange_button.dart';
 import 'package:glitchx_admin/features/Home_Page/Presentation/widget/revenue_chart.dart';
 
-Expanded dashboard_widget() {
+Expanded dashboardwidget() {
   return Expanded(
     child: BlocBuilder<RevenueBloc, RevenueState>(
       builder: (context, state) {
@@ -41,6 +42,7 @@ Expanded dashboard_widget() {
                   _filterButton(context, "By Month", LoadRevenueByMonth()),
                   _filterButton(context, "By Year", LoadRevenueByYear()),
                   _dateRangeButton(context),
+                  monthRangeButton(context),
                 ],
               ),
 

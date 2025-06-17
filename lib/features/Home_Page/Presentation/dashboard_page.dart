@@ -52,7 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
       body: ScreenBackGround(
         widget: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(children: [dashboard_widget()]),
+          child: Column(children: [dashboardwidget()]),
         ),
         screenHeight: screenHeight,
         screenWidth: screenWidth,

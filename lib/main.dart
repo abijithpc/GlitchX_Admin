@@ -11,6 +11,8 @@ import 'package:glitchx_admin/features/Orders_Page/Presentation/Bloc/order_bloc.
 import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
 import 'package:glitchx_admin/features/UserPage/Presentation/Bloc/user_bloc.dart';
 import 'package:glitchx_admin/firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart'; // 👈 Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +40,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Splashscreen(), debugShowCheckedModeBanner: false);
+    return MaterialApp(
+      home: Splashscreen(),
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        MonthYearPickerLocalizations.delegate, // 👈 Important
+      ],
+      supportedLocales: const [
+        Locale('en'), // 👈 You can add more locales if needed
+      ],
+    );
   }
 }

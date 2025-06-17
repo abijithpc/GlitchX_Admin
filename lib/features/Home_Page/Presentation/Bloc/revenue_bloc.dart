@@ -34,7 +34,7 @@ class RevenueBloc extends Bloc<RevenueEvent, RevenueState> {
       for (var order in orders) {
         final key =
             "${order.orderedAt.year}-${order.orderedAt.month.toString().padLeft(2, '0')}-${order.orderedAt.day.toString().padLeft(2, '0')}";
-        map[key] = (map[key] ?? 0) + order.price * order.quantity;
+        map[key] = (map[key] ?? 0) + order.price;
       }
 
       return map;
@@ -108,20 +108,34 @@ class RevenueBloc extends Bloc<RevenueEvent, RevenueState> {
       emit(RevenueLoading());
 
       try {
-        final orders = await ordersInRangeUseCase(event.fromDate, event.toDate);
-        print("Orders in range: ${orders.length}"); // Should not be 0
+        final fromUtc = event.fromDate.toUtc();
+        final toUtc =
+            DateTime(
+              event.toDate.year,
+              event.toDate.month,
+              event.toDate.day,
+              23,
+              59,
+              59,
+            ).toUtc();
 
-        final revenueData = groupByDate(orders); // helper function below
+        final orders = await ordersInRangeUseCase(fromUtc, toUtc);
+        print("✅ Orders fetched: ${orders.length}");
+        for (final o in orders) {
+          print("Amount: ₹${o.price} | Date: ${o.orderedAt}");
+        }
 
-        final totalQuantity = await totalQuantityInRangeUseCase(
-          event.fromDate,
-          event.toDate,
-        );
+        final revenueData = groupByDate(orders);
+        final totalQuantity = await totalQuantityInRangeUseCase(fromUtc, toUtc);
         final orderCount = orders.length;
+        print("🧾 RevenueData: $revenueData");
+        print("📦 Total Quantity: $totalQuantity");
+        print("📊 Order Count: $orderCount");
+        
 
         emit(RevenueLoaded(revenueData, totalQuantity, orderCount));
       } catch (e) {
-        emit(RevenueError(e.toString()));
+        emit(RevenueError("Error loading range data: $e"));
       }
     });
   }
