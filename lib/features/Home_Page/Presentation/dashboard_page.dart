@@ -26,15 +26,15 @@ class _DashboardPageState extends State<DashboardPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () async {
-            await migrateOrderedAtToTimestamp();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Migration completed')));
-          },
-          icon: Icon(Icons.mode_night_sharp, color: Colors.white),
-        ),
+        // leading: IconButton(
+        //   onPressed: () async {
+        //     await migrateOrderedAtToTimestamp();
+        //     ScaffoldMessenger.of(
+        //       context,
+        //     ).showSnackBar(SnackBar(content: Text('Migration completed')));
+        //   },
+        //   icon: Icon(Icons.mode_night_sharp, color: Colors.white),
+        // ),
         title: const Text(
           "📊 Revenue Dashboard",
           style: TextStyle(color: Colors.white),

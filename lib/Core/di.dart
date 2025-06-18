@@ -33,22 +33,22 @@ import 'package:glitchx_admin/features/Orders_Page/Domain/UseCase/fetch_order_us
 import 'package:glitchx_admin/features/Orders_Page/Domain/UseCase/order_usecase.dart';
 import 'package:glitchx_admin/features/Orders_Page/Domain/order_repository/order_repository.dart';
 import 'package:glitchx_admin/features/Orders_Page/Presentation/Bloc/order_bloc.dart';
-import 'package:glitchx_admin/features/ProductPage/Data/ProductRepositoryImpl/product_repositoryimpl.dart';
-import 'package:glitchx_admin/features/ProductPage/Data/Product_RemoteDatasource/product_data_remotesource.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/Product_repository/product_repository.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/delete_usecase.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/edit_usecase.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/get_product_usecase.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/update_profile_image_usecase.dart';
-import 'package:glitchx_admin/features/ProductPage/Domain/UseCase/uploadproduct_usecase.dart';
-import 'package:glitchx_admin/features/ProductPage/Presentation/Bloc/product_bloc.dart';
-import 'package:glitchx_admin/features/UserPage/Data/User_RemoteDatasource/user_dataremotesource.dart';
-import 'package:glitchx_admin/features/UserPage/Data/User_RepositoryImpl/user_reposiotryimpl.dart';
-import 'package:glitchx_admin/features/UserPage/Domain/UseCase/blockuser_usecase.dart';
-import 'package:glitchx_admin/features/UserPage/Domain/UseCase/get_user_usecase.dart';
-import 'package:glitchx_admin/features/UserPage/Domain/UseCase/unblocuser_usecase.dart';
-import 'package:glitchx_admin/features/UserPage/Domain/User_repository/user_repository.dart';
-import 'package:glitchx_admin/features/UserPage/Presentation/Bloc/user_bloc.dart';
+import 'package:glitchx_admin/features/Product_Page/Data/ProductRepositoryImpl/product_repositoryimpl.dart';
+import 'package:glitchx_admin/features/Product_Page/Data/Product_RemoteDatasource/product_data_remotesource.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/Product_repository/product_repository.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/UseCase/delete_usecase.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/UseCase/edit_usecase.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/UseCase/get_product_usecase.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/UseCase/update_profile_image_usecase.dart';
+import 'package:glitchx_admin/features/Product_Page/Domain/UseCase/uploadproduct_usecase.dart';
+import 'package:glitchx_admin/features/Product_Page/Presentation/Bloc/product_bloc.dart';
+import 'package:glitchx_admin/features/User_Page/Data/User_RemoteDatasource/user_dataremotesource.dart';
+import 'package:glitchx_admin/features/User_Page/Data/User_RepositoryImpl/user_reposiotryimpl.dart';
+import 'package:glitchx_admin/features/User_Page/Domain/UseCase/blockuser_usecase.dart';
+import 'package:glitchx_admin/features/User_Page/Domain/UseCase/get_user_usecase.dart';
+import 'package:glitchx_admin/features/User_Page/Domain/UseCase/unblocuser_usecase.dart';
+import 'package:glitchx_admin/features/User_Page/Domain/User_repository/user_repository.dart';
+import 'package:glitchx_admin/features/User_Page/Presentation/Bloc/user_bloc.dart';
 
 final sl = GetIt.instance;
 

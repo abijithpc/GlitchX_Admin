@@ -17,8 +17,7 @@ class RevenueRepositoryImpl implements RevenueRepository {
       final key =
           "${order.orderedAt.year}-${order.orderedAt.month.toString().padLeft(2, '0')}-${order.orderedAt.day.toString().padLeft(2, '0')}";
 
-      revenueByDay[key] =
-          (revenueByDay[key] ?? 0) + order.price * order.quantity;
+      revenueByDay[key] = (revenueByDay[key] ?? 0) + order.price;
     }
 
     return revenueByDay;
@@ -34,8 +33,7 @@ class RevenueRepositoryImpl implements RevenueRepository {
       final key =
           "${order.orderedAt.year}-${order.orderedAt.month.toString().padLeft(2, '0')}";
 
-      revenueByMonth[key] =
-          (revenueByMonth[key] ?? 0) + order.price * order.quantity;
+      revenueByMonth[key] = (revenueByMonth[key] ?? 0) + order.price;
     }
 
     return revenueByMonth;
@@ -50,8 +48,7 @@ class RevenueRepositoryImpl implements RevenueRepository {
     for (var order in orders) {
       final key = "${order.orderedAt.year}";
 
-      revenueByYear[key] =
-          (revenueByYear[key] ?? 0) + order.price * order.quantity;
+      revenueByYear[key] = (revenueByYear[key] ?? 0) + order.price;
     }
 
     return revenueByYear;

@@ -54,40 +54,42 @@ Card OrderCard(OrderModel order, BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.update),
-                  onSelected: (newStatus) {
-                    context.read<OrderBloc>().add(
-                      ChangeOrderStatusEvent(
-                        orderId: order.id,
-                        newStatus: newStatus,
-                      ),
-                    );
-                  },
-                  itemBuilder:
-                      (context) => [
-                        PopupMenuItem(
-                          value: OrderStatus.ordered,
-                          child: Text(OrderStatus.ordered),
+                if (order.status.toLowerCase() !=
+                    OrderStatus.cancelled.toLowerCase())
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.update),
+                    onSelected: (newStatus) {
+                      context.read<OrderBloc>().add(
+                        ChangeOrderStatusEvent(
+                          orderId: order.id,
+                          newStatus: newStatus,
                         ),
-                        PopupMenuItem(
-                          value: OrderStatus.orderPlaced,
-                          child: Text(OrderStatus.orderPlaced),
-                        ),
-                        PopupMenuItem(
-                          value: OrderStatus.shipped,
-                          child: Text(OrderStatus.shipped),
-                        ),
-                        PopupMenuItem(
-                          value: OrderStatus.delivered,
-                          child: Text(OrderStatus.delivered),
-                        ),
-                        PopupMenuItem(
-                          value: OrderStatus.cancelled,
-                          child: Text(OrderStatus.cancelled),
-                        ),
-                      ],
-                ),
+                      );
+                    },
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuItem(
+                            value: OrderStatus.ordered,
+                            child: Text(OrderStatus.ordered),
+                          ),
+                          // PopupMenuItem(
+                          //   value: OrderStatus.orderPlaced,
+                          //   child: Text(OrderStatus.orderPlaced),
+                          // ),
+                          PopupMenuItem(
+                            value: OrderStatus.shipped,
+                            child: Text(OrderStatus.shipped),
+                          ),
+                          PopupMenuItem(
+                            value: OrderStatus.delivered,
+                            child: Text(OrderStatus.delivered),
+                          ),
+                          PopupMenuItem(
+                            value: OrderStatus.cancelled,
+                            child: Text(OrderStatus.cancelled),
+                          ),
+                        ],
+                  ),
                 Text(
                   order.status,
                   style: const TextStyle(color: Colors.blueGrey),

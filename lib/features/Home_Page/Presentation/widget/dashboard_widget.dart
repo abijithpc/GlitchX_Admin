@@ -28,6 +28,7 @@ Expanded dashboardwidget() {
             0.0,
             (sum, value) => sum + (value ?? 0.0),
           );
+          print("Revenue Data :${state.revenueData}");
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
